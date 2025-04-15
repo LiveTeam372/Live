@@ -18,7 +18,7 @@ jobs:
           node-version: '18'
           
       - name: move
-        run: cd frontEnd
+        run: cd frontEnd && pwd
 
       - name: Install dependencies
         run: npm install
