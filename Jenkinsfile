@@ -12,6 +12,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 git branch: 'main', url: 'https://github.com/LiveTeam372/Live.git'
+                sh 'git clean -fdx' // 깃에 없는 파일 및 디렉토리 강제 삭제
             }
         }
 
