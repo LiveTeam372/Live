@@ -4,6 +4,7 @@ pipeline {
     environment {
         CI = 'false'
         DOCKER_IMAGE_FRONTEND = "venivivi/live-frontend"
+        DOCKER_IMAGE_FRONTEND = "venivivi/live-backend"
         DOCKER_TAG = "latest"
         DOCKER_CREDENTIALS_ID = "docker-hub-credentials"
     }
@@ -25,25 +26,33 @@ pipeline {
             }
         }       
 
+        stage('Build Spring Boot App') {
+            steps {
+                dir('backEnd') {
+                    sh './gradlew build -x test'
+                }
+            }
+        }
+
         stage('Build React Docker Image') {
             steps {
                 script {
-                    sh """
-                    docker build -t $DOCKER_IMAGE_FRONTEND:$DOCKER_TAG -f frontEnd/Dockerfile frontEnd
-                    """
+                    sh "docker build -t $DOCKER_IMAGE_FRONTEND:$DOCKER_TAG -f frontEnd/Dockerfile frontEnd"
+                    sh "docker build -t $DOCKER_IMAGE_BACKEND:$DOCKER_TAG -f backEnd/Dockerfile backEnd"
                 }
             }
         }
         
-        stage('Push React to Docker Hub') {
+        stage('Push to Docker Hub') {
             steps {
                  script {
-                    echo '🏗️ 시작: React 이미지 Docker Hub에 푸시 준비 중...'
+                    echo '🏗️ 시작: 이미지 Docker Hub에 푸시 준비 중...'
         
                     docker.withRegistry('https://index.docker.io/v1/', 'docker-hub-credentials') {
                         echo '🔐 Docker Hub 로그인 성공'
                         sh "docker push $DOCKER_IMAGE_FRONTEND:$DOCKER_TAG"
-                        echo '✅ React 이미지 푸시 성공'
+                        sh "docker push $DOCKER_IMAGE_BACKEND:$DOCKER_TAG"
+                        echo '✅ 이미지 푸시 성공'
                     }
                 }
             }
@@ -55,9 +64,9 @@ pipeline {
 sh '''
 ssh live@54.180.159.162 <<EOF
 cd /home/live/live-project
-docker-compose pull frontEnd
-docker-compose down frontEnd
-docker-compose up -d frontEnd
+docker-compose pull frontEnd backEnd
+docker-compose down frontEnd backEnd
+docker-compose up -d frontEnd backEnd
 EOF
 '''
                 }
