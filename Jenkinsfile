@@ -4,7 +4,7 @@ pipeline {
     environment {
         CI = 'false'
         DOCKER_IMAGE_FRONTEND = "venivivi/live-frontend"
-        DOCKER_IMAGE_FRONTEND = "venivivi/live-backend"
+        DOCKER_IMAGE_BACKEND = "venivivi/live-backend"
         DOCKER_TAG = "latest"
         DOCKER_CREDENTIALS_ID = "docker-hub-credentials"
     }
