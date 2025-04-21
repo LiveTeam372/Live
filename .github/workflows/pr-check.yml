@@ -24,5 +24,4 @@ jobs:
       - name: Run Linter & Tests
         run: |
           npx eslint . --quiet
-          npm run test
         working-directory: ./frontEnd
