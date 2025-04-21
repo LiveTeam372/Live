@@ -36,5 +36,3 @@ out/
 ### VS Code ###
 .vscode/
 
-### Common File ###
-./Live/backEnd/src/main/resources/.env
