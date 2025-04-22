@@ -29,7 +29,10 @@ pipeline {
         stage('Build Spring Boot App') {
             steps {
                 dir('backEnd') {
-                    sh './gradlew build -x test'
+                    sh '''
+                    chmod +x gradlew
+                    ./gradlew build -x test
+                    '''
                 }
             }
         }
