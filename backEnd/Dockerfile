@@ -10,6 +10,9 @@ RUN chmod +x gradlew
 # 나머지 파일 복사
 COPY . .
 
+# ✅ 실제로 실행 권한 부여
+RUN chmod +x gradlew
+
 # 📦 패키지 빌드
 RUN ./gradlew build -x test
 
