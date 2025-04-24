@@ -8,6 +8,9 @@ COPY package*.json ./
 # 2. 의존성 설치 (캐시 가능)
 RUN npm ci
 
+# ✅ 운영용 환경변수 복사
+COPY .env.production .env
+
 # 3. 소스 복사
 COPY . .
 
