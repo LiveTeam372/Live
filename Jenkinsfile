@@ -15,29 +15,9 @@ pipeline {
                 git branch: 'main', url: 'https://github.com/LiveTeam372/Live.git'
                 sh 'git clean -fdx' // 깃에 없는 파일 및 디렉토리 강제 삭제
             }
-        }
+        }   
 
-        stage('Build React App') {
-            steps {
-                dir('frontEnd') {
-                    sh 'npm install'
-                    sh 'npm run build'
-                }
-            }
-        }       
-
-        stage('Build Spring Boot App') {
-            steps {
-                dir('backEnd') {
-                    sh '''
-                    chmod +x gradlew
-                    ./gradlew build -x test --no-daemon --info
-                    '''
-                }
-            }
-        }
-
-        stage('Build React Docker Image') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     sh "docker build -t $DOCKER_IMAGE_FRONTEND:$DOCKER_TAG -f frontEnd/Dockerfile frontEnd"
