@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j;
 
 // 자동 생성
 @Component
-@Log4j
+@Slf4j
 @Aspect // AOP 프로그램 지정 (Execute)
 public class LogAdvice {
 
