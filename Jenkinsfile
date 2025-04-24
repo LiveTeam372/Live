@@ -31,7 +31,7 @@ pipeline {
                 dir('backEnd') {
                     sh '''
                     chmod +x gradlew
-                    ./gradlew build -x test
+                    ./gradlew build -x test --no-daemon --info
                     '''
                 }
             }
