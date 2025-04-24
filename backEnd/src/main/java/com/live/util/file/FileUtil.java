@@ -6,9 +6,9 @@ import jakarta.servlet.http.HttpServletRequest;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
-@Log
+@Slf4j
 public class FileUtil {
 
 	// 파일이 존재하는지 확인하는 메서드
