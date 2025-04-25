@@ -41,7 +41,7 @@ jobs:
           DATABASE_PASSWORD=TEST" > .env
           pwd
           cat .env
-        working-directory: ./backEnd/src/main/resources/.env
+        working-directory: ./backEnd/src/main/resources
 
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
