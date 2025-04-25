@@ -7,6 +7,10 @@ on:
 jobs:
   test:
     runs-on: ubuntu-22.04
+    env:
+      DATABASE_URL: jdbc:oracle:thin:@54.180.159.162:1521:xe
+      DATABASE_USERNAME: TEST
+      DATABASE_PASSWORD: TEST
 
     steps:
       - name: Checkout code
@@ -34,10 +38,19 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Create TEST .env file
+        run: |
+          echo "DATABASE_URL=jdbc:oracle:thin:@54.180.159.162:1521:xe
+          DATABASE_USERNAME=TEST
+          DATABASE_PASSWORD=TEST" > .env
+          pwd
+          cat .env
+        working-directory: ./backEnd/src/main/resources
+
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
         working-directory: ./backEnd
 
       - name: Run Spring Boot Tests
-        run: ./gradlew test
+        run: ./gradlew test --info
         working-directory: ./backEnd
