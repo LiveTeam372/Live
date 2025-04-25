@@ -13,7 +13,7 @@ COPY . .
 RUN chmod +x gradlew
 
 # 📦 패키지 빌드
-RUN ./gradlew build -x test --no-daemon --info
+RUN ./gradlew build -x test --no-daemon
 
 # 🚀 실행 환경
 FROM eclipse-temurin:21
