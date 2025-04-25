@@ -12,16 +12,32 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
+      # React용 Node.js 세팅
       - name: Setup Node.js (React)
         uses: actions/setup-node@v3
         with:
           node-version: '18'
 
-      - name: Install dependencies
+      - name: Install frontend dependencies
         run: npm install
         working-directory: ./frontEnd
 
-      - name: Run Linter & Tests
+      - name: Run React Linter
         run: |
           npx eslint . --quiet
         working-directory: ./frontEnd
+
+      # 🧪 Spring Boot 테스트 추가
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Grant execute permission to gradlew
+        run: chmod +x gradlew
+        working-directory: ./backEnd
+
+      - name: Run Spring Boot Tests
+        run: ./gradlew test
+        working-directory: ./backEnd
