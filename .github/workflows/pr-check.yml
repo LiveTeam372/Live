@@ -39,6 +39,7 @@ jobs:
           echo "DATABASE_URL=jdbc:oracle:thin:@54.180.159.162:1521:xe
           DATABASE_USERNAME=TEST
           DATABASE_PASSWORD=TEST" > ./backEnd/src/main/resources/.env
+          pwd
           cat ./backEnd/src/main/resources/.env
 
       - name: Grant execute permission to gradlew
@@ -46,5 +47,5 @@ jobs:
         working-directory: ./backEnd
 
       - name: Run Spring Boot Tests
-        run: ./gradlew test --info
+        run: ./gradlew test
         working-directory: ./backEnd
