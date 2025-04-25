@@ -47,9 +47,9 @@ pipeline {
 sh '''
 ssh -o StrictHostKeyChecking=no live@54.180.159.162 <<EOF
 cd /home/live/live-project
-docker-compose pull frontEnd backEnd
-docker-compose down frontEnd backEnd
-docker-compose up -d frontEnd backEnd
+docker-compose pull
+docker-compose down
+docker-compose up -d
 EOF
 '''
                 }
