@@ -1,0 +1,4 @@
+# 로컬 전용 환경 변수 무시
+.env.local
+.env.development
+.env.development.local

@@ -34,10 +34,16 @@ jobs:
           distribution: 'temurin'
           java-version: '21'
 
+      - name: Create TEST .env file
+        run: |
+          echo "DATABASE_URL=jdbc:oracle:thin:@54.180.159.162:1521:xe" > backEnd/.env
+          echo "DATABASE_USERNAME=TEST" > backEnd/.env
+          echo "DATABASE_PASSWORD=TEST" > backEnd/.env
+
       - name: Grant execute permission to gradlew
         run: chmod +x gradlew
         working-directory: ./backEnd
 
       - name: Run Spring Boot Tests
-        run: ./gradlew test
+        run: ./gradlew test --info
         working-directory: ./backEnd
