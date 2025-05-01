@@ -19,8 +19,13 @@ RUN ./gradlew build -x test --no-daemon
 FROM eclipse-temurin:21
 WORKDIR /app
 
+# 타임존 설정
+RUN apt-get update && apt-get install -y tzdata
+RUN ln -snf /usr/share/zoneinfo/Asia/Seoul /etc/localtime
+RUN echo Asia/Seoul > /etc/timezone
+
 # build/libs 폴더에 jar이 생성됨
 COPY --from=build /app/build/libs/*.jar app.jar
 
 EXPOSE 8080
-CMD ["java", "-jar", "app.jar"]
+CMD ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
