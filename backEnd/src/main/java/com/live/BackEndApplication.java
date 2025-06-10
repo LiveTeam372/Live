@@ -5,7 +5,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-@MapperScan(basePackages = "com.live.mapper")
+@MapperScan(basePackages = "com.live")
 public class BackEndApplication {
 
 	public static void main(String[] args) {
