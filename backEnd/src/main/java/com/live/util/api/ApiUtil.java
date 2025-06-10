@@ -13,15 +13,19 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.xml.XmlMapper;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class ApiUtil {
 	
-	//api 요청을 위한 HttpClient 객체 선언
+	// api 요청을 위한 HttpClient 객체 선언
 	private final HttpClient client = HttpClient.newBuilder().build();
-	//response을 java 객체로 바꾸기 위한 objectMapper 객체 선언
+	// response(JSON)을 java 객체로 바꾸기 위한 objectMapper 객체 선언
 	private final ObjectMapper objectMapper = new ObjectMapper();
+	// response(XML)을 java 객체로 바꾸기 위한 objectMapper 객체 선언
+    private final XmlMapper xmlMapper = new XmlMapper();
 	
 	
 	 /**
@@ -140,8 +144,13 @@ public class ApiUtil {
      * @throws JsonProcessingException JSON 파싱 중 오류가 발생할 경우
      */
     private JsonNode convertStringBodyToJsonNode(HttpResponse<String> response) throws JsonProcessingException {
-        String jsonString = response.body(); // 응답 본문 (JSON 문자열)
-        return objectMapper.readTree(jsonString); // JSON 문자열을 JsonNode 트리로 파싱
+        String bodyString = response.body(); // 응답 본문 (JSON 문자열)
+        // body가 xml 형식으로 들어올때
+        if(bodyString.indexOf('<') == 0) {        	
+        	return xmlMapper.readTree(bodyString); // xml 문자열을 JsonNode 트리로 파싱        	
+        } else {
+        	return objectMapper.readTree(bodyString); // JSON 문자열을 JsonNode 트리로 파싱        	
+        }
     }    	
 
     

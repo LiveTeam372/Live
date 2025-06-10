@@ -42,6 +42,8 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
+    // XML 데이터 포맷을 처리하기 위한 Jackson 모듈
+    implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1'
 }
 
 tasks.named('test') {
