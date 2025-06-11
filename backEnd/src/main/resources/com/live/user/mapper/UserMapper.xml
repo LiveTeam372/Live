@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.live.user.mapper.UserMapper">
+	
+	<select id="login"  resultType="com.live.user.dto.LoginDTO">
+		SELECT 
+			A.USER_NO userNo, 
+			A.EMAIL email, 
+			A.GB_CD gbCd, 
+			B.GB_NM gbNm,
+			A.SOCIAL_YN socialYN, 
+			A.SOCIAL_CH socialCH,
+			A.UPDATE_DATE updateDate,
+			A.USEFLAG_YN userFlagYN,
+			C.EMAIL_AUTH_YN emailAuthYN,
+			C.CELL_AUTH_YN cellAuthYN,
+			C.ADR_AUTH_YN adrAuthYN,
+			D.NAME name,
+			D.NICKNAME nickName,
+			D.PROFILE_IMG profileImg,
+			E.AG_NO agNo
+		FROM 
+			USERINFO A, 
+			USER_GUBUN B, 
+			USER_AUTH C, 
+			USERINFO_DTL D, 
+			USERINFO_AG_DTL E
+		WHERE 
+			(A.EMAIL = #{email} AND A.pw = #{pw})
+			AND
+			(
+				A.GB_CD = B.GB_CD
+				AND A.USER_NO = C.USER_NO(+)
+				AND A.USER_NO = D.USER_NO(+)
+				AND A.USER_NO = E.USER_NO(+)
+			)			
+	</select>
+	
+	<insert id="join">
+		INSERT INTO USERINFO(USER_NO, EMAIL, PW, GB_CD)
+		VALUES (#{dto.userNo}, #{dto.email}, #{dto.pw}, #{dto.gbCd})
+	</insert>
+	
+	<insert id="joinAuth">
+		INSERT INTO USER_AUTH(USER_NO)
+		VALUES (#{userNo})
+	</insert>
+	
+	<select id="isAvailableEmail">
+		SELECT EMAIL FROM USERINFO WHERE EMAIL = #{email}
+	</select>
+	
+	<select id="isAvailableUserNo">
+		SELECT USER_NO FROM USERINFO WHERE USER_NO = #{userNo}
+	</select>
+	
+</mapper>
