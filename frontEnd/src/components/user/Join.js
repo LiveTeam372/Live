@@ -113,84 +113,93 @@ const Join = ({ setView }) => {
           pw,
           gbCd
         });
-        alert("회원가입이 정상적으로 완료되었습니다.")
-        setView("emailAuth");
-      } catch(err) {
-        if (err.response) {
-          setMessageJoin(err.response.data.message);
-        } else {
-          setMessageJoin('서버 오류 발생');
-        }
+        
+         // 인증메일 전송
+         const resMail = await axios.post('http://localhost:16543/user/sendAuthNum.do', {
+           email
+         });
+         console.log("인증번호 이메일 전송 완료", resMail.data);        
+
+        alert("회원가입이 정상적으로 완료되었습니다.");
+        setView({ name: "EmailAuth", email });
+
+      } catch (err) {
+        console.error("회원가입 또는 이메일 전송 중 오류 발생", err);
+        alert("문제가 발생했습니다. 다시 시도해 주세요.");
       }
     } else {
       alert("입력하신 정보를 확인해 주세요.");
       return false;
     }
-    
   };
 
 
   return (
-    <div className='row'>
-      <div className='col-2' style={{width:'300px', cursor: 'pointer', marginTop: '1rem', marginBottom: '3rem', fontSize: "20px" }}>
-        <div className='' style={{margin: '0px'}}>
-          <img src={logo} style={{width:'130px', height:'130px'}}></img>
-        </div>
-        <div style={{marginLeft: '20px'}}>
-          <span>
-            회원가입을 통해서<br/>
-            <strong>다양한 매물을 확인하세요.</strong>
-          </span>
-        </div>
-      </div>
-      <div className="join-container col-8">
-        <div className="join-box">
-          <h3 style={{textAlign:'center'}}>회원가입</h3>
-          <form onSubmit={userJoin}>
-            <input type='hidden' name="gbCd" value="1"></input>
-            <div className="input-group">
-              <label>이메일</label>
-              <input 
-                type="text" 
-                required 
-                placeholder="이메일 입력" 
-                name="email"
-                onChange={checkEmail}
-              />
-              <span className={isValidEmail ? 'msg-success' : 'msg-error'}>{messageEmail}</span>
-            </div>
-            <div className="input-group">
-              <label>비밀번호</label>
-              <input 
-                type="password" 
-                required 
-                placeholder="비밀번호 입력"
-                name="pw"
-                onChange={checkPw}
-              />
-              <span className={isValidPw ? 'msg-success' : 'msg-error'}>{messagePw}</span>
-            </div>
-            <div className="input-group">
-              <label>비밀번호 확인</label>
-              <input 
-                type="password" 
-                required 
-                placeholder="비밀번호 확인"
-                name="pw2"
-                onChange={isEqualPw}
-              />
-              <span className={isValidPw2 ? 'msg-success' : 'msg-error'}>{messagePw2}</span>
-            </div>
-            <button type="submit" className="login-button">회원가입</button>
-            <span className='msg-error'>{messageJoin}</span>
-            
-          </form>
-          <div className="login-box-footter">
-            <span> > 중개인 회원 가입하러 가기</span>
+    <div className='container'>
+      <div className='row' style={{paddingTop:'50px'}}>
+        <div className='col-2' style={{width:'300px', marginTop: '1rem', marginBottom: '3rem', fontSize: "20px" }}>
+          <div className='' style={{margin: '0px'}}>
+            <img src={logo} style={{width:'130px', height:'130px'}}></img>
+          </div>
+          <div style={{marginLeft: '20px'}}>
+            <span>
+              회원가입을 통해서<br/>
+              <strong>다양한 매물을 확인하세요.</strong>
+            </span>
+          </div>
+          <div style={{marginLeft: '20px', marginTop: '30px'}}>
+            <span onClick={() => setView("LoginUser")}>← 로그인하러 가기</span>
           </div>
         </div>
+        <div className="join-container col-8">
+          <div className="join-box">
+            <h3 style={{textAlign:'center'}}>회원가입</h3>
+            <form onSubmit={userJoin}>
+              <input type='hidden' name="gbCd" value="1"></input>
+              <div className="input-group">
+                <label>이메일</label>
+                <input 
+                  type="text" 
+                  required 
+                  placeholder="이메일 입력" 
+                  name="email"
+                  onChange={checkEmail}
+                />
+                <span className={isValidEmail ? 'msg-success' : 'msg-error'}>{messageEmail}</span>
+              </div>
+              <div className="input-group">
+                <label>비밀번호</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="비밀번호 입력"
+                  name="pw"
+                  onChange={checkPw}
+                />
+                <span className={isValidPw ? 'msg-success' : 'msg-error'}>{messagePw}</span>
+              </div>
+              <div className="input-group">
+                <label>비밀번호 확인</label>
+                <input 
+                  type="password" 
+                  required 
+                  placeholder="비밀번호 확인"
+                  name="pw2"
+                  onChange={isEqualPw}
+                />
+                <span className={isValidPw2 ? 'msg-success' : 'msg-error'}>{messagePw2}</span>
+              </div>
+              <button type="submit" className="login-button">회원가입</button>
+              <span className='msg-error'>{messageJoin}</span>
+              
+            </form>
+            <div className="login-box-footter">
+              <span> → 중개인 회원 가입하러 가기</span>
+            </div>
+          </div>
+        </div>
+        <div className='col-2'></div>
       </div>
-      <div className='col-2'></div>
     </div>
   );
 }

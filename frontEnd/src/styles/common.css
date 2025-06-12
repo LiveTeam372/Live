@@ -65,6 +65,18 @@
   transition: background-color 0.3s;
 }
 
+.login-button-false {
+  width: 100%;
+  padding: 12px;
+  background-color: #6e6e6e;
+  color: #e0e0e0;
+  border: none;
+  border-radius: 6px;
+  font-size: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 .login-button:hover {
   background-color: #E3931D;
   color: white;

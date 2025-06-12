@@ -29,7 +29,7 @@ const LoginUser = ({ setView }) => {
       // 이메일 인증 여부
       if (res.data.emailAuthYN === "N") {
         alert("로그인 되었습니다. 이메일 인증을 완료해 주세요.");
-        setView({ name: "EmailAuth", email: res.data.email });
+        setView({ name: "EmailAuth", email: res.data.email }); // 이메일 인증
       } else {
         alert("로그인 되었습니다.");
         navigate('/'); // 리다이렉트
@@ -76,7 +76,7 @@ const LoginUser = ({ setView }) => {
         <div className="login-box-footter">
           <span>아이디 찾기</span> /
           <span>비밀번호 찾기</span> /
-          <span onClick={() => setView('join')}>회원가입</span>
+          <span onClick={() => setView('Join')}>회원가입</span>
         </div>
       </div>
       <div className='login-text-area flex-area'>

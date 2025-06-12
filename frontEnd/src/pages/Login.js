@@ -15,7 +15,7 @@ const Login = () => {
       <>
       {view === "LoginUser" && <LoginUser setView={setView} />}
       {view === "Join" && <Join setView={setView} />}
-      {view.name === "EmailAuth" && <EmailAuth email={view.email} />}
+      {view.name === "EmailAuth" && <EmailAuth email={view.email} setView={setView} />}
       </>
     </div>
   );
