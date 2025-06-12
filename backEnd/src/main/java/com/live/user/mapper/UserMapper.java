@@ -29,4 +29,6 @@ public interface UserMapper {
     
     public String findAuthNumByEmail(@Param("email")String email);
     
+    public int authEmail(@Param("userNo")String userNo);
+    
 }

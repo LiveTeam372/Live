@@ -27,7 +27,7 @@ import jakarta.servlet.http.HttpSession;
 import lombok.extern.log4j.Log4j;
 
 @RestController
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000", allowCredentials = "true")
 @RequestMapping("/user")
 @Log4j
 public class UserController {
@@ -162,9 +162,17 @@ public class UserController {
     	boolean isValid = checkEmailAuth(dto.getEmail(), dto.getAuthNum());
     	
     	log.info("isValid " + isValid);
+    	log.info("userNo " + dto.getUserNo());
 
         if (isValid) {
-            return ResponseEntity.ok().body(Map.of("result", "success"));
+        	// 이메일 인증 업데이트
+        	int result = mapper.authEmail(dto.getUserNo());
+        	
+        	if (result == 0) {
+        		throw new IllegalArgumentException("인증정보가 업데이트 되지 않았습니다.");
+        	}
+        	
+        	return ResponseEntity.ok().body(Map.of("result", "success"));
         } else {
         	throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }

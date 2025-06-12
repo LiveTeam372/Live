@@ -74,5 +74,9 @@
 	    WHERE EMAIL = #{email}
 	</select>
 		
+	<update id="authEmail">
+		UPDATE USER_AUTH SET EMAIL_AUTH_YN = 'Y'
+		WHERE USER_NO = #{userNo}
+	</update>
 	
 </mapper>
