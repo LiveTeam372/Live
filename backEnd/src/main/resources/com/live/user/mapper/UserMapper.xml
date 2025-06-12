@@ -55,4 +55,24 @@
 		SELECT USER_NO FROM USERINFO WHERE USER_NO = #{userNo}
 	</select>
 	
+	<select id="countByEmail" resultType="int">
+	    SELECT COUNT(*) FROM EMAIL_AUTH WHERE EMAIL = #{email}
+	</select>
+	
+	<insert id="insertAuthNum">
+	    INSERT INTO EMAIL_AUTH (EMAIL, AUTH_NUM, CREATED_AT)
+	    VALUES (#{email}, #{authNum}, SYSTIMESTAMP)
+	</insert>
+	
+	<update id="updateAuthNum">
+	    UPDATE EMAIL_AUTH SET AUTH_NUM = #{authNum}, CREATED_AT = SYSTIMESTAMP
+	    WHERE EMAIL = #{email}
+	</update>
+	
+	<select id="findAuthNumByEmail" resultType="string">
+	    SELECT AUTH_NUM FROM EMAIL_AUTH
+	    WHERE EMAIL = #{email}
+	</select>
+		
+	
 </mapper>

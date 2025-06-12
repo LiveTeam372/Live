@@ -2,10 +2,13 @@ package com.live.user.controller;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.live.common.security.Encrypt;
+import com.live.user.dto.EmailAuthDTO;
+import com.live.user.dto.EmailRequestDTO;
 import com.live.user.dto.LoginDTO;
 import com.live.user.dto.UserDTO;
 import com.live.user.mapper.UserMapper;
@@ -27,6 +32,9 @@ import lombok.extern.log4j.Log4j;
 @Log4j
 public class UserController {
 
+	@Autowired
+	private JavaMailSender mailSender;
+	
 	@Autowired
 	private UserMapper mapper;
 	
@@ -67,6 +75,7 @@ public class UserController {
 	// 로그인 정보 반환
 	@PostMapping("/getLoginUser.do")
 	public ResponseEntity<LoginDTO> getLoginUser(HttpSession session) {
+		log.info("User Controller --------------- getLoginUser()");
 	    LoginDTO loginUser = (LoginDTO) session.getAttribute("loginUser");
 
 	    if (loginUser != null) {
@@ -122,6 +131,7 @@ public class UserController {
 	// 이메일 중복 체크
 	@PostMapping("/chekedEmail.do")
 	public ResponseEntity<Map<String, Object>> checkedEmail(@RequestBody Map<String, String> res) {
+		log.info("User Controller --------------- checkedEmail()");
 		String email = res.get("email");
 		
 		boolean isAvailable = !isAvailableEmail(email);
@@ -131,8 +141,35 @@ public class UserController {
 	    return ResponseEntity.ok(result);
 	}
 	
+	// 이메일 전송
+	@PostMapping("/sendAuthNum.do")
+	public ResponseEntity<?> sendAuthNum(@RequestBody EmailRequestDTO dto) {
+		log.info("User Controller --------------- sendAuthNum()");
+		boolean result = sendEmailAuth(dto.getEmail());
+
+	    if (result) {
+	        return ResponseEntity.ok().body(Map.of("message", "인증번호가 전송되었습니다."));
+	    } else {
+	    	throw new IllegalArgumentException("메일 전송 실패");
+	    }
+	}
 	
-	
+	// 메일 인증
+    @PostMapping("/authEmail.do")
+    public ResponseEntity<?> authEmail(@RequestBody EmailAuthDTO dto) {
+    	log.info("User Controller --------------- authEmail()");
+    	
+    	boolean isValid = checkEmailAuth(dto.getEmail(), dto.getAuthNum());
+    	
+    	log.info("isValid " + isValid);
+
+        if (isValid) {
+            return ResponseEntity.ok().body(Map.of("result", "success"));
+        } else {
+        	throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
+        }
+    }
+		
 	
 	//--------------------- utils ----------------------------
 	
@@ -162,4 +199,50 @@ public class UserController {
 		String result = mapper.isAvailableUserNo(strNo);
 	    return (result != null && !result.isEmpty()); // 중복되면 true
 	}
+	
+	// 인증 이메일 발송
+	public boolean sendEmailAuth(String email) {
+        String authNum = generateAuthNumber();
+
+        // 이메일 전송
+        try {
+            sendEmail(email, authNum);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        // DB 저장 (기존 있으면 업데이트, 없으면 삽입)
+        int count = mapper.countByEmail(email);
+        if (count > 0) {
+            mapper.updateAuthNum(email, authNum);
+        } else {
+            mapper.insertAuthNum(email, authNum);
+        }
+
+        return true;
+    }
+
+	// 인증번호 생성
+    private String generateAuthNumber() {
+        Random random = new Random();
+        int num = 100000 + random.nextInt(900000); // 6자리
+        return String.valueOf(num);
+    }
+
+    // 이메일 발송
+    private void sendEmail(String to, String authNum) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setTo(to);
+        message.setSubject("[인증번호] 이메일 인증 요청");
+        message.setText("인증번호는 " + authNum + " 입니다. 입력란에 정확히 입력해주세요.");
+        mailSender.send(message);
+    }
+	
+	// 이메일 인증
+	public boolean checkEmailAuth(String email, String authNum) {
+        String storedAuth = mapper.findAuthNumByEmail(email);
+
+        return authNum != null && authNum.equals(storedAuth);
+    }
 }

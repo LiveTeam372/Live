@@ -6,34 +6,34 @@ import lombok.Data;
 public class UserDTO {
 
 	// 회원 기본정보
-	String userNo;
-	String email;
-	String pw;
-	String gbCd;
-	String socialYN;
-	String socialCh;
-	String updateDate;
-	String useFlagYN;
+	private String userNo;
+	private String email;
+	private String pw;
+	private String gbCd;
+	private String socialYN;
+	private String socialCh;
+	private String updateDate;
+	private String useFlagYN;
 	
 	// 회원 권한
-	String emailAuthYN;
-	String cellAuthYN;
-	String adrAuthYN;
+	private String emailAuthYN;
+	private String cellAuthYN;
+	private String adrAuthYN;
 	
 	// 회원 상세 정보
-	String name;
-	String nickName;
-	String gendeMF;
-	String birth;
-	String cellPhone_1;
-	String cellPhone_2;
-	String cellPhone_3;
-	String address;
-	String addressDtl;
-	String marriedYN;
-	String profileImg;
+	private String name;
+	private String nickName;
+	private String gendeMF;
+	private String birth;
+	private String cellPhone_1;
+	private String cellPhone_2;
+	private String cellPhone_3;
+	private String address;
+	private String addressDtl;
+	private String marriedYN;
+	private String profileImg;
 
 	// 사업자 정보
-	String agNo;
-	String decscription;
+	private String agNo;
+	private String decscription;
 }

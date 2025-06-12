@@ -44,6 +44,8 @@ dependencies {
     developmentOnly 'org.springframework.boot:spring-boot-devtools'
     // XML 데이터 포맷을 처리하기 위한 Jackson 모듈
     implementation 'com.fasterxml.jackson.dataformat:jackson-dataformat-xml:2.16.1'
+    // 이메일 전송 의존성 추가
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 }
 
 tasks.named('test') {

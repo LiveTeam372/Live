@@ -11,13 +11,22 @@ import com.live.user.dto.UserDTO;
 @Mapper
 public interface UserMapper {
 
-    LoginDTO login(UserDTO dto);
+    public LoginDTO login(UserDTO dto);
     
-    int join(@Param("dto") UserDTO dto);
+    public int join(@Param("dto") UserDTO dto);
     
-    int joinAuth(String userNo);
+    public int joinAuth(String userNo);
     
-    String isAvailableEmail(String email);
+    public String isAvailableEmail(String email);
     
-    String isAvailableUserNo(String strNo);
+    public String isAvailableUserNo(String strNo);
+    
+    public int countByEmail(@Param("email")String email);
+    
+    public int updateAuthNum(@Param("email")String email, @Param("authNum")String authNum);
+    
+    public int insertAuthNum(@Param("email")String email, @Param("authNum")String authNum);
+    
+    public String findAuthNumByEmail(@Param("email")String email);
+    
 }
