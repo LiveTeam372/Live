@@ -1,13 +1,10 @@
 import React, { useState } from 'react';
 import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
-import axios from 'axios';
+import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
-import Join from "../user/Join.js";
-import EmailAuth from "../user/EmailAuth.js";
-
-const LoginUser = ({ setView }) => {
+const LoginUser = ({ setView, setUser, user }) => {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [message, setMessage] = useState('');
@@ -18,14 +15,16 @@ const LoginUser = ({ setView }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    console.log("userName :: " + email);
-    console.log("password :: " + pw);
-
     try {
       const res = await axios.post('http://localhost:16543/user/login.do', 
       { email, pw});
       
-      console.log("res.loginUser.emailAuth :: " + JSON.stringify(res.data.emailAuthYN));
+      console.log("userInfo :: " + JSON.stringify(res.data));
+
+      // 로그인 완료, 로컬 스토리지에 저장장
+      localStorage.setItem('user', JSON.stringify(res.data));
+      setUser(res.data); // 상태 업데이트
+
       // 이메일 인증 여부
       if (res.data.emailAuthYN === "N") {
         alert("로그인 되었습니다. 이메일 인증을 완료해 주세요.");
@@ -71,7 +70,7 @@ const LoginUser = ({ setView }) => {
             />
           </div>
           <button type="submit" className="login-button">로그인</button>
-          <span className='err-txt'>{message}</span>
+          <span className='msg-error'>{message}</span>
         </form>
         <div className="login-box-footter">
           <span>아이디 찾기</span> /

@@ -1,5 +1,6 @@
 // import { useEffect, useState } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
 // import { getRequest } from "./api/api.js";
 import Header from './components/Header.js';
 import Footer from './components/Footer.js';
@@ -16,16 +17,26 @@ function App () {
 //     getRequest('/env');
 //   },[]);
 
+  // 로그인 상태
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const userInfo = localStorage.getItem("user");
+    if (userInfo) {
+      setUser(JSON.parse(userInfo));
+    }
+  }, []);
+
   return (
     <div>
       <BrowserRouter>
-        <Header />
+        <Header user={user} setUser={setUser} />
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/product' element={<Product />} />
           <Route path='/like' element={<Like />} />
           <Route path='/reservation' element={<Reservation />} />
-          <Route path='/login' element={<Login />} />
+          <Route path='/login' element={<Login setUser={setUser} />} />
         </Routes>
         <Footer />
       </BrowserRouter>

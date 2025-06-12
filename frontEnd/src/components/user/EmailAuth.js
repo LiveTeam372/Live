@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
-import axios from 'axios';
+import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 const EmailAuth = ({ setView, email }) => {
+
+  // 로그인 유저 정보
+  const userData = localStorage.getItem("user");
 
   // 인증번호 입력 상태값
   const [isAuthNum, setIsAuthNum] = useState(false); // ✅ 메시지가 정상인지 여부
@@ -64,23 +67,31 @@ const EmailAuth = ({ setView, email }) => {
     console.log("authEmail :: " + email);
     console.log("authEmail :: " + authNum);
 
+    // userNo
+    const user = JSON.parse(userData);
+    const userNo = user.userNo;
+
+
+    console.log("userNo :: " + userNo);
+
     try {
       const res = await axios.post('http://localhost:16543/user/authEmail.do', {
         email,
-        authNum
+        authNum,
+        userNo
       });
 
       if (res.data.result === "success") {
         alert("이메일 인증이 완료되었습니다!");
         navigate('/'); // 리다이렉트
       } else {
-        setMessageAuthNum("인증번호가 올바르지 않습니다.");
+        setMessageAuthNum(res.data.message);
         setIsAuthNum(false);
         return false;
       }
     } catch (err) {
-      console.error(err);
-      alert("서버 오류가 발생했습니다.");
+      console.error(err.message);
+      alert(err.message);
       return false;
     }
       

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
-import axios from 'axios';
+import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
 const Join = ({ setView }) => {
@@ -107,21 +107,21 @@ const Join = ({ setView }) => {
       console.log("회원가입 진행");
       gbCd = 1; // 사업자 구분 1:일반 2:사업자
 
-      try {
-        const res = await axios.post('http://localhost:16543/user/join.do', {
-          email,
-          pw,
-          gbCd
+    try {
+      const res = await axios.post('http://localhost:16543/user/join.do', {
+        email,
+        pw,
+        gbCd
+      });
+      
+        // 인증메일 전송
+        const resMail = await axios.post('http://localhost:16543/user/sendAuthNum.do', {
+          email
         });
-        
-         // 인증메일 전송
-         const resMail = await axios.post('http://localhost:16543/user/sendAuthNum.do', {
-           email
-         });
-         console.log("인증번호 이메일 전송 완료", resMail.data);        
+        console.log("인증번호 이메일 전송 완료", resMail.data);        
 
-        alert("회원가입이 정상적으로 완료되었습니다.");
-        setView({ name: "EmailAuth", email });
+      alert("회원가입이 정상적으로 완료되었습니다.");
+      setView({ name: "EmailAuth", email });
 
       } catch (err) {
         console.error("회원가입 또는 이메일 전송 중 오류 발생", err);
