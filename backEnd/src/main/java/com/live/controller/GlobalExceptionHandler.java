@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleException(Exception ex) {
-        Map<String, String> error = new HashMap()<>();
+        Map<String, String> error = new HashMap<>();
         error.put("message", ex.getMessage()); // 리액트에서 받을 수 있는 message 필드
         return new ResponseEntity<>(error, HttpStatus.BAD_REQUEST);
     }
