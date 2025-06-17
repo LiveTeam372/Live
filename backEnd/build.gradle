@@ -34,6 +34,8 @@ dependencies {
 	implementation 'org.apache.logging.log4j:log4j-core'
     implementation 'org.apache.logging.log4j:log4j-api'
     implementation 'org.apache.directory.studio:org.apache.logging.log4j:1.2.17'
+    // log4jdbc-log4j2 의존성 추가
+    implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4:1.16'
     // aop 의존성 추가
     implementation 'org.springframework.boot:spring-boot-starter-aop:3.4.4'
     // test 관련 의존성 추가
