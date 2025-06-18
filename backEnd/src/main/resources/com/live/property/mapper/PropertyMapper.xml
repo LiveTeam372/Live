@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.live.property.mapper.PropertyMapper">
+	
+	<!--매물 기본 정보들 가져오기-->
+	<select id="selectBasicProperties" resultType="com.live.property.dto.PropertyDTO">	    
+		SELECT 
+		    p.PROPERTY_ID,
+		    p.TITLE,
+		    ptyp.TYPE_NAME AS PROPERTY_TYPE,
+		    ttyp.TYPE_NAME AS TRANSACTION_TYPE,
+		    p.PRICE,
+		    p.DEPOSIT,
+		    p.MONTHLY_RENT,
+		    p.EXCLUSIVE_AREA,
+		    p.SUPPLY_AREA,
+		    pa.ADRESS_NAME AS address,
+		    pa.LAT,
+		    pa.LNG,
+		    p.FLOOR,
+		    p.TOTAL_FLOORS,
+		    p.ROOMS,
+		    p.BATHROOMS,
+		    TO_DATE(p.MOVE_IN_DATE, 'YYYY-MM-DD') AS MOVE_IN_DATE,
+		    p.MAINTENANCE_FEE,
+		    TO_DATE(p.REGISTRATION_DATE, 'YYYY-MM-DD') AS REGISTRATION_DATE,
+		    p.STATUS,
+		    p.VIEW_COUNT
+		FROM 
+		     PROPERTY p
+		    LEFT JOIN PROPERTY_TYPE ptyp ON p.PROPERTY_TYPE_ID = ptyp.ID
+		    LEFT JOIN TRANSACTION_TYPE ttyp ON p.TRANSATION_TYPE_ID = ttyp.ID
+		    LEFT JOIN ADDRESS pa ON p.ADDRESS_ID = pa.ADDRESS_ID    
+		ORDER BY p.PROPERTY_ID
+	</select>
+	
+	<!--매물 옵션들 가져오기-->
+	<select id="selectOptions" resultType="com.live.property.dto.PropertyOptionDTO" parameterType="com.live.property.dto.PropertyDTO">	    
+		SELECT 
+		    p.PROPERTY_ID,
+		    od.OPTION_NAME
+		FROM
+		    PROPERTY p
+		    LEFT JOIN PROPERTY_OPTIONS po ON p.PROPERTY_ID = po.PROPERTY_ID
+		    LEFT JOIN OPTION_DICTIONARY od ON po.OPTION_ID = od.OPTION_ID
+		WHERE p.PROPERTY_ID IN(
+			<foreach collection="list" item="dto" separator=",">
+				#{dto.propertyId}
+			</foreach>
+		)
+		ORDER BY p.PROPERTY_ID
+	</select>
+	
+	<!--매물 태그들 가져오기-->
+	<select id="selectTags" resultType="com.live.property.dto.PropertyTagDTO" parameterType="com.live.property.dto.PropertyDTO">	    
+		SELECT 
+		    p.PROPERTY_ID,
+		    pt.TAG_NAME
+		FROM
+		    PROPERTY p
+		    LEFT JOIN PROPERTY_TAG pt ON p.PROPERTY_ID = pt.PROPERTY_ID
+		WHERE p.PROPERTY_ID IN(
+			<foreach collection="list" item="dto" separator=",">
+				#{dto.propertyId}
+			</foreach>
+		)
+		ORDER BY p.PROPERTY_ID
+	</select>
+	
+	<!--매물 이미지 주소들 가져오기-->
+	<select id="selectImages" resultType="com.live.property.dto.PropertyImageDTO" parameterType="com.live.property.dto.PropertyDTO">	    
+		SELECT 
+		    p.PROPERTY_ID,pi.IMAGE_URL
+		FROM
+		    PROPERTY p
+		    LEFT JOIN PROPERTY_IMAGES pi ON p.PROPERTY_ID = pi.PROPERTY_ID
+		WHERE p.PROPERTY_ID IN(
+			<foreach collection="list" item="dto" separator=",">
+				#{dto.propertyId}
+			</foreach>
+		)
+		ORDER BY p.PROPERTY_ID
+	</select>
+	
+</mapper>
