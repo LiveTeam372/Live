@@ -4,6 +4,7 @@ import "../styles/common.css";
 import LoginUser from "../components/user/LoginUser.js";
 import Join from "../components/user/Join.js";
 import EmailAuth from "../components/user/EmailAuth.js";
+import UserDetailForm from "../components/user/UserDetailForm.js";
 
 const Login = ({setUser, user }) => {
   const [view, setView] = useState('LoginUser');
@@ -16,6 +17,7 @@ const Login = ({setUser, user }) => {
       {view === "LoginUser" && <LoginUser setView={setView} setUser={setUser} user={user} />}
       {view === "Join" && <Join setView={setView} />}
       {view.name === "EmailAuth" && <EmailAuth email={view.email} setView={setView} />}
+      {view === "UserDetailForm" && <UserDetailForm setView={setView} />}
       </>
     </div>
   );

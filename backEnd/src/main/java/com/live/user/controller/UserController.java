@@ -1,6 +1,8 @@
 package com.live.user.controller;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
@@ -9,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -177,6 +180,61 @@ public class UserController {
         	throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
         }
     }
+    
+    // 닉네임 중복 체크
+ 	@PostMapping("/chekedNickName.do")
+ 	public ResponseEntity<Map<String, Object>> checkedNickName(@RequestBody Map<String, String> res) {
+ 		log.info("User Controller --------------- checkedNickName()");
+ 		String nickName = res.get("nickName");
+ 		
+ 		boolean isAvailable = !isAvailableEmail(nickName);
+ 		
+ 		Map<String, Object> result = new HashMap<>();
+ 	    result.put("available", isAvailable);
+ 	    return ResponseEntity.ok(result);
+ 	}
+ 	
+ 	// 회원 추가 정보 입력
+ 	@PostMapping("/userDetailSubmit.do")
+ 	@Transactional
+ 	public ResponseEntity<Map<String, String>> userDetailSubmit(@RequestBody UserDTO userDto) {
+ 		log.info("User Controller --------------- userDetailSubmit()");
+ 		
+ 		String gbCd = userDto.getGbCd();
+ 		int result = 0;
+ 		
+ 		log.info("입력 정보 gbCd [ " + gbCd + " ] :: " + userDto.toString() );
+ 		
+ 		if("1".equals(gbCd)) {
+ 			result = mapper.userDetalSubmit(userDto);
+ 			
+ 			log.info("관심지역 [ " + gbCd + " ] :: " + userDto.getInst_address() );
+ 			log.info(userDto.getInst_address().isEmpty() );
+ 			
+ 			// 관심 지역 추가
+ 			if (result > 0 && !userDto.getInst_address().isEmpty()) { 
+ 				for (int i = 0; i < userDto.getInst_address().size(); i++){
+					Map<String, String> tempList = userDto.getInst_address().get(i);
+					tempList.put("userNo", userDto.getUserNo());
+					
+					log.info("관심지역 [ " + i + " ] :: " + tempList.toString() );
+					
+					mapper.addInterestAdd(tempList);
+				}
+ 			}
+ 		} else {
+ 			result = mapper.agentDetalSubmit(userDto);
+ 		}
+ 		
+ 		if (result > 0) {
+ 			return ResponseEntity.ok().body(Map.of("result", "success"));
+ 		} else {
+ 			Map<String, String> returnMsg = new HashMap<>();
+ 			returnMsg.put("result", "falied");
+ 			returnMsg.put("message", "회원정보가 추가되지 않았습니다."); 			
+ 			return ResponseEntity.ok(returnMsg);
+ 		}
+ 	}
 		
 	
 	//--------------------- utils ----------------------------
@@ -189,6 +247,17 @@ public class UserController {
 	// 이메일 중복 체크
 	public boolean isAvailableEmail(String email) {
 		String result = mapper.isAvailableEmail(email);
+		return (result != null && !result.isEmpty()); // 중복되면 true
+	}
+	
+	/**
+	 * 
+	 * @param nickName
+	 * @return boolean
+	 */
+	// 이메일 중복 체크
+	public boolean isAvailableNickName(String nickName) {
+		String result = mapper.isAvailableNickName(nickName);
 		return (result != null && !result.isEmpty()); // 중복되면 true
 	}
 	

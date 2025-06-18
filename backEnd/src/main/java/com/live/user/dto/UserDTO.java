@@ -1,5 +1,8 @@
 package com.live.user.dto;
 
+import java.util.List;
+import java.util.Map;
+
 import lombok.Data;
 
 @Data
@@ -23,7 +26,7 @@ public class UserDTO {
 	// 회원 상세 정보
 	private String name;
 	private String nickName;
-	private String gendeMF;
+	private String genderMF;
 	private String birth;
 	private String cellPhone_1;
 	private String cellPhone_2;
@@ -32,6 +35,9 @@ public class UserDTO {
 	private String addressDtl;
 	private String marriedYN;
 	private String profileImg;
+	
+	// 관심지역
+	private List<Map<String, String>> inst_address;
 
 	// 사업자 정보
 	private String agNo;

@@ -157,3 +157,82 @@
   font-size: 13px;
   color: green;
 }
+
+.profile-img-inform-div {
+  text-align: center;
+}
+
+.profile-img-inform-div img {
+  border: 0.5px solid #6e6e6e;
+  padding: 10px;
+  cursor: pointer;
+}
+
+.detail-form-container {
+  justify-content: center;
+  align-items: center;
+  height: 100vh;          /* 화면 전체 높이 */
+  width: 100%;           /* 화면 전체 너비 */
+  max-width: 700px;
+}
+
+.detail-form-box {
+  background: #eee;
+  padding: 40px 32px;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  max-width: 700px;
+  box-sizing: border-box;
+}
+
+form .row {
+  margin-bottom: 15px;
+  align-items: center;
+}
+
+.login-btn-inform {
+  width: 100%;
+  background-color: #FFC000;
+  color: black;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.login-btn-inform:hover {
+  background-color: #E3931D;
+  color: white;
+}
+
+/* 공통 스타일 */
+.custom-radio {
+  display: none; /* 실제 input 숨김 */
+}
+
+.custom-radio-btn {
+  display: inline-block;
+  padding: 8px 20px;
+  border: 2px solid #ccc;
+  border-radius: 10px;
+  background-color: white;
+  color: #333;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  font-weight: 500;
+}
+
+/* 선택된 버튼 스타일 */
+.custom-radio:checked + .custom-radio-btn {
+  background-color: #E3931D;
+  color: white;
+  border-color: #E3931D;
+}
+
+.interestAdr {
+  padding-left: 20px;
+  padding-right: 20px;
+  font-weight: bold;
+}

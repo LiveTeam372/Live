@@ -82,8 +82,13 @@ const EmailAuth = ({ setView, email }) => {
       });
 
       if (res.data.result === "success") {
-        alert("이메일 인증이 완료되었습니다!");
-        navigate('/'); // 리다이렉트
+        if (res.data.name == null) {
+          alert("이메일 인증이 완료되었습니다! 추가 정보를 입력해 주세요.");
+          setView("UserDetailForm");
+        } else {
+          alert("이메일 인증이 완료되었습니다!");
+          navigate('/'); // 리다이렉트
+        }
       } else {
         setMessageAuthNum(res.data.message);
         setIsAuthNum(false);

@@ -79,4 +79,50 @@
 		WHERE USER_NO = #{userNo}
 	</update>
 	
+	<select id="isAvailableNickName">
+		SELECT NICKNAME FROM USERINFO_DTL WHERE NICKNAME = #{nickName}
+	</select>
+	
+	<insert id="userDetalSubmit" parameterType="com.live.user.dto.UserDTO">
+		INSERT INTO USERINFO_DTL (
+			USER_NO, 
+			NAME, 
+			NICKNAME, 
+			GENDER_MF, 
+			BIRTH,
+			CELL_PHONE_1, 
+			CELL_PHONE_2, 
+			CELL_PHONE_3, 
+			ADDRESS, 
+			ADDRESS_DTL, 
+			MARRIED_YN, 
+			PROFILE_IMG
+		) VALUES (
+			#{dto.userNo},
+			#{dto.name},
+			#{dto.nickName},
+			#{dto.genderMF},
+			#{dto.birth},
+			#{dto.cellPhone_1},
+			#{dto.cellPhone_2},
+			#{dto.cellPhone_3},
+			#{dto.address, jdbcType=VARCHAR},
+			#{dto.addressDtl, jdbcType=VARCHAR},
+			#{dto.marriedYN},
+			#{dto.profileImg, jdbcType=VARCHAR}			
+		)
+	</insert>
+	
+	<insert id="addInterestAdd" parameterType="map">
+	  INSERT INTO INTEREST_ADR (
+	    USER_NO,
+	    ADDRESS,
+	    ADDRESS_ID
+	  ) VALUES (
+	    #{userNo},
+	    #{name},
+	    #{code}
+	  )
+	</insert>
+	
 </mapper>

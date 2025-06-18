@@ -19,7 +19,7 @@ const LoginUser = ({ setView, setUser, user }) => {
       const res = await axios.post('http://localhost:16543/user/login.do', 
       { email, pw});
       
-      console.log("userInfo :: " + JSON.stringify(res.data));
+      // console.log("userInfo :: " + JSON.stringify(res.data));
 
       // 로그인 완료, 로컬 스토리지에 저장장
       localStorage.setItem('user', JSON.stringify(res.data));
@@ -29,6 +29,9 @@ const LoginUser = ({ setView, setUser, user }) => {
       if (res.data.emailAuthYN === "N") {
         alert("로그인 되었습니다. 이메일 인증을 완료해 주세요.");
         setView({ name: "EmailAuth", email: res.data.email }); // 이메일 인증
+      } else if (res.data.gbCd == "1" && res.data.name == null) {
+        alert("로그인 되었습니다. 추가 정보를 입력해 주세요.");
+        setView("UserDetailForm");
       } else {
         alert("로그인 되었습니다.");
         navigate('/'); // 리다이렉트
