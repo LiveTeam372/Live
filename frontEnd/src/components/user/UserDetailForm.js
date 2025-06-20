@@ -4,9 +4,9 @@ import logo from '../../images/live-logo_.png';
 import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
-import { getYears, getMonths, getDaysInMonth } from '../../resources/common.js';
+import common from '../../resources/common.js';
 
-const UserDetailForm = ({ setView, email }) => {
+const UserDetailForm = ({ setView }) => {
 
   const navigate = useNavigate();
 
@@ -34,7 +34,7 @@ const UserDetailForm = ({ setView, email }) => {
   const currentYear = new Date().getFullYear();
   
   const [years, setYears] = useState([]);
-  const [months] = useState(getMonths());
+  const [months] = useState(common.getMonths());
   const [days, setDays] = useState([]);
 
   const [selectedYear, setSelectedYear] = useState('');
@@ -59,35 +59,19 @@ const UserDetailForm = ({ setView, email }) => {
 
   useEffect(() => {
     // 연도 리스트 생성
-    setYears(getYears(currentYear));
+    setYears(common.getYears(currentYear));
   }, [currentYear]);
 
   useEffect(() => {
     // 연도와 월이 선택되면 해당 달의 일 수 계산
-    setDays(getDaysInMonth(selectedYear, selectedMonth));
+    setDays(common.getDaysInMonth(selectedYear, selectedMonth));
   }, [selectedYear, selectedMonth]);
-
-  // 인풋값 검증
-  const isValidInputName = (e) => {
-     const regex = /^[가-힣]{2,10}$/;
-    return regex.test(e);
-  }
-
-  const isValidInputNickName = (e) => {
-     const regex = /^[가-힣a-zA-Z0-9]{2,10}$/;
-    return regex.test(e);
-  }
-  
-  const isValidInputCall = (e) => {
-    const regex = /^[0-9]{1,}$/;
-    return regex.test(e);
-  } 
 
   const checkName = (e) => {
     const value = e.target.value;
     setUserName(value);
 
-    if (!isValidInputName(value)) {
+    if (!common.isValidKorean(value, 2, 10)) {
       setMessageName("2~10자 이내 한글만 입력 가능합니다.");
       setIsValidName(false);
     } else {
@@ -100,7 +84,7 @@ const UserDetailForm = ({ setView, email }) => {
     const value = e.target.value;
     setUserNickName(value);
 
-    if (!isValidInputNickName(value)) {
+    if (!common.isValidKoEnNum(value, 2, 10)) {
       setMessageNickName("2~10자 이내 한글, 영문, 숫자만 입력 가능합니다.");
       setIsValidNickName(false);
     } else {
@@ -113,7 +97,7 @@ const UserDetailForm = ({ setView, email }) => {
     const value = e.target.value;
     setUserCell_1(value);
 
-    if (!isValidInputCall(value)) {
+    if (!common.isValidNum(value, 2, 3)) {
       setMessageCall("숫자만 입력 가능합니다.");
       setIsValidCall(false);
     } else {
@@ -126,7 +110,7 @@ const UserDetailForm = ({ setView, email }) => {
     const value = e.target.value;
     setUserCell_2(value);
 
-    if (!isValidInputCall(value)) {
+    if (!common.isValidNum(value, 3, 4)) {
       setMessageCall("숫자만 입력 가능합니다.");
       setIsValidCall(false);
     } else {
@@ -139,7 +123,7 @@ const UserDetailForm = ({ setView, email }) => {
     const value = e.target.value;
     setUserCell_3(value);
 
-    if (!isValidInputCall(value)) {
+    if (!common.isValidNum(value, 4, 4)) {
       setMessageCall("숫자만 입력 가능합니다.");
       setIsValidCall(false);
     } else {

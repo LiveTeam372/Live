@@ -39,7 +39,7 @@
 			)			
 	</select>
 	
-	<insert id="join">
+	<insert id="join" parameterType="com.live.user.dto.UserDTO">
 		INSERT INTO USERINFO(USER_NO, EMAIL, PW, GB_CD)
 		VALUES (#{dto.userNo}, #{dto.email}, #{dto.pw}, #{dto.gbCd})
 	</insert>
@@ -128,6 +128,30 @@
 	    #{name},
 	    #{code}
 	  )
+	</insert>
+	
+	<insert id="agentDetalSubmit" parameterType="com.live.user.dto.UserDTO">
+		INSERT INTO USERINFO_AG_DTL (
+			USER_NO, 
+			NAME, 
+			AG_NO,
+			CELL_PHONE_1, 
+			CELL_PHONE_2, 
+			CELL_PHONE_3, 
+			ADDRESS, 
+			ADDRESS_DTL, 
+			DESCRIPTION
+		) VALUES (
+			#{dto.userNo},
+			#{dto.name},
+			#{dto.agNo},
+			#{dto.cellPhone_1},
+			#{dto.cellPhone_2},
+			#{dto.cellPhone_3},
+			#{dto.address, jdbcType=VARCHAR},
+			#{dto.addressDtl, jdbcType=VARCHAR},
+			#{dto.description, jdbcType=VARCHAR}
+		)
 	</insert>
 	
 	<select id="getProfileImgPath" resultType="String">

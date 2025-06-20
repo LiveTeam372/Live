@@ -31,7 +31,10 @@ const LoginUser = ({ setView, setUser, user }) => {
         setView({ name: "EmailAuth", email: res.data.email }); // 이메일 인증
       } else if (res.data.gbCd == "1" && res.data.name == null) {
         alert("로그인 되었습니다. 추가 정보를 입력해 주세요.");
-        setView("UserDetailForm");
+        setView({ name: "UserDetailForm", gbCd: "1" });
+      } else if (res.data.gbCd == "2" && res.data.name == null) {
+        alert("로그인 되었습니다. 추가 정보를 입력해 주세요.");
+        setView("JoinAgent");
       } else {
         alert("로그인 되었습니다.");
         navigate('/'); // 리다이렉트

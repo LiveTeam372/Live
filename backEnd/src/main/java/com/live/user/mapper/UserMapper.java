@@ -21,7 +21,7 @@ public interface UserMapper {
     
     public String isAvailableEmail(@Param("email")String email);
     
-    public String isAvailableUserNo(@Param("email")String strNo);
+    public String isAvailableUserNo(@Param("userNo")String strNo);
     
     public int countByEmail(@Param("email")String email);
     

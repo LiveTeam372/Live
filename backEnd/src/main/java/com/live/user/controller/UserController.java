@@ -120,7 +120,9 @@ public class UserController {
 		} else {
 			// 중복체크 후 회원 번호 채번
 			userNo = genUserNo();
+			log.info("UserDTO.userNo :: " + userNo);
 			userDto.setUserNo(userNo);
+			
 			
 			// 회원 가입 실행
 			int result = mapper.join(userDto);

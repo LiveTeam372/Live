@@ -41,5 +41,5 @@ public class UserDTO {
 
 	// 사업자 정보
 	private String agNo;
-	private String decscription;
+	private String description;
 }

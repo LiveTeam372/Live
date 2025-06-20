@@ -4,6 +4,8 @@ import logo from '../../images/live-logo_.png';
 import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
+import common from '../../resources/common.js';
+
 const EmailAuth = ({ setView, email }) => {
 
   // 로그인 유저 정보
@@ -17,18 +19,12 @@ const EmailAuth = ({ setView, email }) => {
 
   const navigate = useNavigate();
 
-  // 인증번호 정규식
-  const isValidPassword = (value) => {
-    const regex = /^\d{6}$/;
-    return regex.test(value);
-  };
-
   // 인증번호 유효성체크
   const checkAuthNum = (e) => {
     const value = e.target.value;
     setAuthNum(value);
 
-    if (isValidPassword(value)) {
+    if (common.isValidNum(value, 6, 6)) {
       setMessageAuthNum("");
       if (value.length === 6) {
         setMessageAuthNum("");
@@ -84,7 +80,8 @@ const EmailAuth = ({ setView, email }) => {
       if (res.data.result === "success") {
         if (res.data.name == null) {
           alert("이메일 인증이 완료되었습니다! 추가 정보를 입력해 주세요.");
-          setView("UserDetailForm");
+          if(userData.gbCd === "1") setView("UserDetailForm");
+          else setView("JoinAgent");
         } else {
           alert("이메일 인증이 완료되었습니다!");
           navigate('/'); // 리다이렉트

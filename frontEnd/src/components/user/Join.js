@@ -3,6 +3,9 @@ import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
 import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import UserDetailForm from './UserDetailForm';
+
+import common from '../../resources/common.js';
 
 const Join = ({ setView }) => {
 
@@ -11,8 +14,9 @@ const Join = ({ setView }) => {
   const [email, setEmail] = useState('');
   const [pw, setPw] = useState('');
   const [pw2, setPw2] = useState('');
+  const [isAgent, setIsAgent] = useState(false);
 
-  let [gbCd, setGbCd] = useState('');
+  let [gbCd, setGbCd] = useState('1');
 
   // 이메일 상태값
   const [isValidEmail, setIsValidEmail] = useState(false); // ✅ 메시지가 정상인지 여부
@@ -28,25 +32,12 @@ const Join = ({ setView }) => {
 
   const [messageJoin, setMessageJoin] = useState('');
 
-  // 이메일 정규식
-  const isValidEmailCheck = (email) => {
-    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    const hasOnlyEngNum = /^[a-zA-Z0-9@._%+-]+$/.test(email); // 한글 등 특수문자 방지
-    return email.length <= 30 && emailRegex.test(email) && hasOnlyEngNum;
-  };
-
-  // 비밀번호 정규식
-  const isValidPassword = (pw) => {
-    const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-    return passwordRegex.test(pw);
-  };
-
-  // 이메일 유효성 체크크
+  // 이메일 유효성 체크
   const checkEmail = async (e) => {
     const value = e.target.value;
     setEmail(value);
 
-    if (!isValidEmailCheck(value)) {
+    if (!common.isValidEmail(value)) {
       setMessageEmail("올바른 이메일 형식이며 30자 이내여야 합니다.");
       setIsValidEmail(false);
       return;
@@ -75,7 +66,7 @@ const Join = ({ setView }) => {
   const checkPw = (e) => {
     const value = e.target.value;
     setPw(value);
-    if (!isValidPassword(value)) {
+    if (!common.isValidPassword(value)) {
       setMessagePw("영어, 숫자, 특수문자 포함 8자리 이상이어야 합니다.");
       setIsValidPw(false);
     } else {
@@ -98,21 +89,29 @@ const Join = ({ setView }) => {
     }
   }
 
+  const agentCheck = (e) => {
+    setIsAgent(e.target.checked);
+    if (e.target.checked) {
+      console.log("체크 됨!");
+      setGbCd("2");
+    } else {
+      console.log("체크 해제 됨!");
+      setGbCd("1");
+    }
+  }
 
   // 회원 가입
   const userJoin = async (e) => {
     e.preventDefault();
+    console.log("회원가입 진행");
 
     if(isValidEmail && isValidPw && isValidPw2) {
-      console.log("회원가입 진행");
-      gbCd = 1; // 사업자 구분 1:일반 2:사업자
-
-    try {
-      const res = await axios.post('http://localhost:16543/user/join.do', {
-        email,
-        pw,
-        gbCd
-      });
+      try {
+        const res = await axios.post('http://localhost:16543/user/join.do', {
+          email,
+          pw,
+          gbCd
+        });
       
         // 인증메일 전송
         const resMail = await axios.post('http://localhost:16543/user/sendAuthNum.do', {
@@ -131,6 +130,7 @@ const Join = ({ setView }) => {
       alert("입력하신 정보를 확인해 주세요.");
       return false;
     }
+
   };
 
 
@@ -192,10 +192,11 @@ const Join = ({ setView }) => {
               <button type="submit" className="login-button">회원가입</button>
               <span className='msg-error'>{messageJoin}</span>
               
+              <div className="login-box-footter" style={{justifyItems:"center",alignItems:"center"}}>
+                <input type="checkbox" className='m-3' style={{width: "20px", height: "20px"}} onChange={agentCheck}></input>
+                <span style={{justifyItems:"center",alignItems:"center"}}>중개인 회원으로 가입하기 </span>
+              </div>
             </form>
-            <div className="login-box-footter">
-              <span> → 중개인 회원 가입하러 가기</span>
-            </div>
           </div>
         </div>
         <div className='col-2'></div>
