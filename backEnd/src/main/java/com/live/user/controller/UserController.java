@@ -1,10 +1,12 @@
 package com.live.user.controller;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +18,9 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.live.common.security.Encrypt;
 import com.live.user.dto.EmailAuthDTO;
@@ -89,6 +93,7 @@ public class UserController {
 	}
 	
 	@PostMapping("/join.do")
+	@Transactional
 	public ResponseEntity<Map<String, String>> join(@RequestBody Map<String, String> res, HttpSession session) {
 		
 		log.info("User Controller --------------- join()");
@@ -121,8 +126,9 @@ public class UserController {
 			int result = mapper.join(userDto);
 			
 			if (result >= 1) {
-				// auth 테이블 데이터 생성
-				mapper.joinAuth(userNo);
+				mapper.joinAuth(userNo); // auth 테이블 데이터 생성
+				mapper.addProfileImg(userNo); // 프로필 이미지 생성
+				
 				msg.put("message", "회원 가입이 정상적으로 완료 되었습니다.");
 				return ResponseEntity.ok(msg);
 			} else {
@@ -235,6 +241,47 @@ public class UserController {
  			return ResponseEntity.ok(returnMsg);
  		}
  	}
+ 	
+ 	// 프로필 이미지 변경
+ 	@PostMapping("/updateProfileImg.do")
+ 	public ResponseEntity<?> updateProfileImg(
+ 	    @RequestParam("profileImg") MultipartFile file,
+ 	    @RequestParam("userNo") String userNo
+ 	) {
+ 		
+ 		log.info("User Controller --------------- updateProfileImg()");
+ 		
+ 	    try {
+ 	    	// 1. 기존 이미지 경로 조회
+ 	        String oldImgPath = mapper.getProfileImgPath(userNo); // 예: /images/uploaded/oldFile.jpg
+
+ 	        // 2. 실제 파일 경로로 변환
+ 	        String baseDir = "D:/Feeljae/workspace/Live/frontEnd/public";
+ 	        File oldFile = new File(baseDir + oldImgPath);
+ 	        if (oldFile.exists()) {
+ 	            oldFile.delete(); // 삭제
+ 	        }
+
+ 	        // 3. 새 이미지 저장
+ 	        String uploadDir = baseDir + "/images/uploaded";
+ 	        File dir = new File(uploadDir);
+ 	        if (!dir.exists()) dir.mkdirs();
+
+ 	        String newFileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+ 	        File dest = new File(uploadDir, newFileName);
+ 	        file.transferTo(dest);
+
+ 	        // 4. DB에 새 이미지 경로 저장
+ 	        String savePath = "/images/uploaded/" + newFileName;
+ 	        mapper.updateUserProfileImg(userNo, savePath);
+ 	        
+ 	       return ResponseEntity.ok(Map.of("success", true, "profileImg", savePath));
+ 	    } catch (Exception e) {
+ 	        e.printStackTrace();
+ 	        return ResponseEntity.status(500).body(Map.of("success", false));
+ 	    }
+ 	}
+ 	
 		
 	
 	//--------------------- utils ----------------------------

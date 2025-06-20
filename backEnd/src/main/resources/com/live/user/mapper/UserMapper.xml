@@ -18,14 +18,15 @@
 			C.ADR_AUTH_YN adrAuthYN,
 			D.NAME name,
 			D.NICKNAME nickName,
-			D.PROFILE_IMG profileImg,
+			F.PROFILE_IMG profileImg,
 			E.AG_NO agNo
 		FROM 
 			USERINFO A, 
 			USER_GUBUN B, 
 			USER_AUTH C, 
 			USERINFO_DTL D, 
-			USERINFO_AG_DTL E
+			USERINFO_AG_DTL E,
+			USER_PROFILE_IMG F
 		WHERE 
 			(A.EMAIL = #{email} AND A.pw = #{pw})
 			AND
@@ -34,6 +35,7 @@
 				AND A.USER_NO = C.USER_NO(+)
 				AND A.USER_NO = D.USER_NO(+)
 				AND A.USER_NO = E.USER_NO(+)
+				AND A.USER_NO = F.USER_NO(+)
 			)			
 	</select>
 	
@@ -44,6 +46,11 @@
 	
 	<insert id="joinAuth">
 		INSERT INTO USER_AUTH(USER_NO)
+		VALUES (#{userNo})
+	</insert>
+	
+	<insert id="addProfileImg">
+		INSERT INTO USER_PROFILE_IMG(USER_NO)
 		VALUES (#{userNo})
 	</insert>
 	
@@ -95,8 +102,7 @@
 			CELL_PHONE_3, 
 			ADDRESS, 
 			ADDRESS_DTL, 
-			MARRIED_YN, 
-			PROFILE_IMG
+			MARRIED_YN
 		) VALUES (
 			#{dto.userNo},
 			#{dto.name},
@@ -108,8 +114,7 @@
 			#{dto.cellPhone_3},
 			#{dto.address, jdbcType=VARCHAR},
 			#{dto.addressDtl, jdbcType=VARCHAR},
-			#{dto.marriedYN},
-			#{dto.profileImg, jdbcType=VARCHAR}			
+			#{dto.marriedYN}		
 		)
 	</insert>
 	
@@ -124,5 +129,13 @@
 	    #{code}
 	  )
 	</insert>
+	
+	<select id="getProfileImgPath" resultType="String">
+	  SELECT PROFILE_IMG FROM USER_PROFILE_IMG WHERE USER_NO = #{userNo}
+	</select>
+	
+	<update id="updateUserProfileImg">
+		UPDATE USER_PROFILE_IMG SET PROFILE_IMG = #{profileImg} WHERE USER_NO = #{userNo}
+	</update>
 	
 </mapper>

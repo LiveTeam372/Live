@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
-import noImage from '../../images/noImage.png';
 import axios from '../../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
 
@@ -13,10 +12,7 @@ const UserDetailForm = ({ setView, email }) => {
 
   // 로그인 유저 정보
   const userData = JSON.parse(localStorage.getItem("user"));
-  // console.log("[ UserDetailForm.js / userData ] :: " + userData);
-  // console.log("[ UserDetailForm.js / userData / email ] :: " + userData.email);
 
-  //const profileImg = userData.profileImg == null ? noImage : profileImg;
   const nickName = userData.nickName == null ? userData.email : userData.nickName;
   const userType = userData.gbCd;
 
@@ -154,19 +150,45 @@ const UserDetailForm = ({ setView, email }) => {
 
   // 초기값 처리
   useEffect(() => {
-    if (userData?.profileImg) {
-      setProfileImg(userData.profileImg);  // 서버 저장된 이미지 URL
-    } else {
-      setProfileImg(noImage);
-    }
+    setProfileImg(`${process.env.PUBLIC_URL}${userData.profileImg}`);  // 서버 저장된 이미지 URL
   }, []);
 
   // 프로필 이미지 변경
-  const profileImgChange = (e) => {
+  const profileImgChange = async (e) => {
     const file = e.target.files[0];
-    if (file) {
-      setUserProfileImg(file);                             // 파일 저장
-      setProfileImg(URL.createObjectURL(file)); // 미리보기용 URL 저장
+    console.log("file :: " + URL.createObjectURL(file));
+
+    if (!file) return;
+
+    // 미리보기용 URL 생성
+    const imgPreviewUrl = URL.createObjectURL(file);
+    setProfileImg(imgPreviewUrl);
+
+    // 서버로 보낼 FormData 생성
+    const formData = new FormData();
+    formData.append("profileImg", file);
+    formData.append("userNo", userData.userNo); // 필요한 경우 사용자 ID 추가
+
+    try {
+      const res = await axios.post(
+        "http://localhost:16543/user/updateProfileImg.do",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (res.data.success) {
+        alert("프로필 이미지가 성공적으로 변경되었습니다.");
+        setUserProfileImg(file); // 파일 저장
+      } else {
+        alert("프로필 이미지 변경에 실패했습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류가 발생했습니다.");
     }
   };
 
@@ -311,7 +333,6 @@ const UserDetailForm = ({ setView, email }) => {
         address : userAdd,
         addressDtl : userAddDtl,
         marriedYN : userMarried,
-        multiProfileImg : userProfileImg,
         inst_address: interestAddrs
       };
     } else { // 사업자 회원
@@ -320,8 +341,6 @@ const UserDetailForm = ({ setView, email }) => {
 
       };
     }
-    
-
     console.log("[ UserDetailForm / userDetailSubmit() / data ] jsonData :: " + JSON.stringify(jsonData));
 
     // 폼 제출
@@ -359,14 +378,14 @@ const UserDetailForm = ({ setView, email }) => {
         </div>
         <div className="detail-form-container col-8">
           <div className="detail-form-box">
+            <div className="profile-img-inform-div">
+              <label htmlFor="profile-img-input" style={{ cursor: "pointer" }}>
+                <img src={ profileImg } className="rounded-circle profile-img" alt="No Image" style={{width:'80px', height:'80px'}}></img>
+              </label>
+              <input type="file" accept="image/*" id="profile-img-input" onChange={profileImgChange} style={{ display: "none" }}/>  
+              <h6 style={{marginTop: "20px"}}>{ nickName } 님 </h6>
+            </div>
             <form onSubmit={userDetailSubmit}>
-              <div className="profile-img-inform-div">
-                <label htmlFor="profile-img-input" style={{ cursor: "pointer" }}>
-                  <img src={ profileImg } className="rounded-circle profile-img" alt="No Image" style={{width:'80px', height:'80px'}}></img>
-                </label>
-                <input type="file" accept="image/*" id="profile-img-input" onChange={profileImgChange} style={{ display: "none" }}/>  
-                <h6 style={{marginTop: "20px"}}>{ nickName } 님 </h6>
-              </div>
               <div style={{marginTop: "30px"}}>
                 <div className="row">
                   <div className="col-2"><span >이름</span></div>

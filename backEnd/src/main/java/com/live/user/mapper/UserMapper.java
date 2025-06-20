@@ -40,5 +40,11 @@ public interface UserMapper {
 	public int agentDetalSubmit(@Param("dto")UserDTO userDto);
 
 	public void addInterestAdd(Map<String, String> tempList);
+
+	public int addProfileImg(@Param("userNo")String userNo);
+
+	public int updateUserProfileImg(@Param("userNo") String userNo, @Param("profileImg") String profileImgPath);
+
+	public String getProfileImgPath(@Param("userNo") String userNo);
     
 }
