@@ -2,8 +2,6 @@ package com.live.user.controller;
 
 import java.io.File;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
@@ -25,7 +23,6 @@ import org.springframework.web.multipart.MultipartFile;
 import com.live.common.security.Encrypt;
 import com.live.user.dto.EmailAuthDTO;
 import com.live.user.dto.EmailRequestDTO;
-import com.live.user.dto.LoginDTO;
 import com.live.user.dto.UserDTO;
 import com.live.user.mapper.UserMapper;
 import com.live.utils.UserNoGenerator;
@@ -46,7 +43,7 @@ public class UserController {
 	private UserMapper mapper;
 	
 	@PostMapping("/login.do")
-	public ResponseEntity<LoginDTO> login(@RequestBody Map<String, String> res, HttpSession session) {
+	public ResponseEntity<UserDTO> login(@RequestBody Map<String, String> res, HttpSession session) {
 //		dto.setPw(Encrypt.SHA(dto.getPw()));
 
 		log.info("User Controller --------------- login()");
@@ -62,28 +59,38 @@ public class UserController {
 		userDto.setEmail(email);
 		userDto.setPw(encPw);
 		
-		LoginDTO loginDTO = mapper.login(userDto);
-//
-		log.info(loginDTO);
-//
-		if (loginDTO == null || loginDTO.equals("")) {
+		userDto = mapper.login(userDto);
+		log.info(userDto);
+		
+		if (userDto == null || userDto.equals("")) {
 			// 로그인 정보 없음
 			throw new IllegalArgumentException("아이디 또는 비밀번호를 확인해 주세요.");
 		} else {
-			session.setAttribute("login", loginDTO);
+			String gbCd = userDto.getGbCd();
+			String userNo = userDto.getUserNo();
+			
+			userDto = mapper.userInfo(userNo, gbCd);
+			
+			// 관심 지역
+			if (gbCd.equals("1")) {
+				log.info(mapper.getUserInstList(userNo));
+				userDto.setInst_address(mapper.getUserInstList(userNo));
+			}
+			
+			session.setAttribute("login", userDto);
 			
 			Map<String, String> msg = new HashMap<>();
 			msg.put("message", "로그인 되었습니다.");
 			
-			return ResponseEntity.ok(loginDTO);
+			return ResponseEntity.ok(userDto);
 		}
 	} // end of login()
 	
 	// 로그인 정보 반환
 	@PostMapping("/getLoginUser.do")
-	public ResponseEntity<LoginDTO> getLoginUser(HttpSession session) {
+	public ResponseEntity<UserDTO> getLoginUser(HttpSession session) {
 		log.info("User Controller --------------- getLoginUser()");
-	    LoginDTO loginUser = (LoginDTO) session.getAttribute("loginUser");
+		UserDTO loginUser = (UserDTO) session.getAttribute("login");
 
 	    if (loginUser != null) {
 	        return ResponseEntity.ok(loginUser);
@@ -205,36 +212,74 @@ public class UserController {
  	// 회원 추가 정보 입력
  	@PostMapping("/userDetailSubmit.do")
  	@Transactional
- 	public ResponseEntity<Map<String, String>> userDetailSubmit(@RequestBody UserDTO userDto) {
+ 	public ResponseEntity<Map<String, String>> userDetailSubmit(@RequestBody UserDTO userDto, HttpSession session) {
  		log.info("User Controller --------------- userDetailSubmit()");
  		
  		String gbCd = userDto.getGbCd();
+ 		String joinYN = userDto.getJoinYN();
  		int result = 0;
  		
  		log.info("입력 정보 gbCd [ " + gbCd + " ] :: " + userDto.toString() );
  		
- 		if("1".equals(gbCd)) {
- 			result = mapper.userDetalSubmit(userDto);
- 			
- 			log.info("관심지역 [ " + gbCd + " ] :: " + userDto.getInst_address() );
- 			log.info(userDto.getInst_address().isEmpty() );
- 			
- 			// 관심 지역 추가
- 			if (result > 0 && !userDto.getInst_address().isEmpty()) { 
- 				for (int i = 0; i < userDto.getInst_address().size(); i++){
-					Map<String, String> tempList = userDto.getInst_address().get(i);
-					tempList.put("userNo", userDto.getUserNo());
-					
-					log.info("관심지역 [ " + i + " ] :: " + tempList.toString() );
-					
-					mapper.addInterestAdd(tempList);
-				}
+ 		if (joinYN.equals("Y")) { // 신규 가입일 경우
+ 			log.info("신규가입 [ " + gbCd + " ] :: " + userDto.toString() );
+ 			if("1".equals(gbCd)) { // 일반 회원
+ 				result = mapper.userDetalSubmit(userDto);
+ 				
+ 				log.info("관심지역 [ " + gbCd + " ] :: " + userDto.getInst_address() );
+ 				log.info(userDto.getInst_address().isEmpty() );
+ 				
+ 				// 관심 지역 추가
+ 				if (result > 0 && !userDto.getInst_address().isEmpty()) { 
+ 					for (int i = 0; i < userDto.getInst_address().size(); i++){
+ 						Map<String, String> tempList = userDto.getInst_address().get(i);
+ 						tempList.put("userNo", userDto.getUserNo());
+ 						
+ 						log.info("관심지역 [ " + i + " ] :: " + tempList.toString() );
+ 						
+ 						mapper.addInterestAdd(tempList);
+ 					}
+ 				}
+ 			} else { // 사업자 회원
+ 				result = mapper.agentDetalSubmit(userDto);
  			}
- 		} else {
- 			result = mapper.agentDetalSubmit(userDto);
+ 		} else { // 정보 변경인 경우
+ 			log.info("정보변경 [ " + gbCd + " ] :: " + userDto.toString() );
+ 			if("1".equals(gbCd)) { // 일반 회원
+ 				result = mapper.userDetailUpdate(userDto);
+ 				
+ 				// 기존 관심지역 모두 삭제 후 다시 업데이트
+ 				mapper.deleteInstAdr(userDto.getUserNo());
+ 				
+ 				log.info("관심지역 [ " + gbCd + " ] :: " + userDto.getInst_address() );
+ 				log.info(userDto.getInst_address().isEmpty() );
+ 				
+ 				// 관심 지역 추가
+ 				if (result > 0 && !userDto.getInst_address().isEmpty()) { 
+ 					for (int i = 0; i < userDto.getInst_address().size(); i++){
+ 						Map<String, String> tempList = userDto.getInst_address().get(i);
+ 						tempList.put("userNo", userDto.getUserNo());
+ 						
+ 						log.info("관심지역 [ " + i + " ] :: " + tempList.toString() );
+ 						
+ 						mapper.addInterestAdd(tempList);
+ 					}
+ 				}
+ 			} else { // 사업자 회원
+ 				result = mapper.agentDetailUpdate(userDto);
+ 			}
  		}
  		
  		if (result > 0) {
+ 			// 로그인 정보 재전달
+ 			UserDTO newUserInfo = new UserDTO();
+ 			newUserInfo = mapper.userInfo(userDto.getUserNo(), userDto.getGbCd());
+ 			
+ 			if (userDto.getGbCd().equals("1")) {
+ 				newUserInfo.setInst_address(mapper.getUserInstList(userDto.getUserNo()));
+ 			} 
+ 			
+ 			session.setAttribute("login", newUserInfo);
  			return ResponseEntity.ok().body(Map.of("result", "success"));
  		} else {
  			Map<String, String> returnMsg = new HashMap<>();
@@ -259,13 +304,16 @@ public class UserController {
 
  	        // 2. 실제 파일 경로로 변환
  	        String baseDir = "D:/Feeljae/workspace/Live/frontEnd/public";
+ 	       
  	        File oldFile = new File(baseDir + oldImgPath);
+ 	        log.info("oldFile :: " + oldFile);
+ 	        log.info("oldFile :: " + oldFile.exists());
  	        if (oldFile.exists()) {
  	            oldFile.delete(); // 삭제
  	        }
 
  	        // 3. 새 이미지 저장
- 	        String uploadDir = baseDir + "/images/uploaded";
+ 	        String uploadDir = baseDir + "/images/uploaded/";
  	        File dir = new File(uploadDir);
  	        if (!dir.exists()) dir.mkdirs();
 
@@ -284,7 +332,6 @@ public class UserController {
  	    }
  	}
  	
-		
 	
 	//--------------------- utils ----------------------------
 	

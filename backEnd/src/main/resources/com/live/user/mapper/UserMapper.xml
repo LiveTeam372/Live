@@ -3,7 +3,7 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.live.user.mapper.UserMapper">
 	
-	<select id="login"  resultType="com.live.user.dto.LoginDTO">
+	<select id="login"  resultType="com.live.user.dto.UserDTO">
 		SELECT 
 			A.USER_NO userNo, 
 			A.EMAIL email, 
@@ -12,7 +12,7 @@
 			A.SOCIAL_YN socialYN, 
 			A.SOCIAL_CH socialCH,
 			A.UPDATE_DATE updateDate,
-			A.USEFLAG_YN userFlagYN,
+			A.USEFLAG_YN useFlagYN,
 			C.EMAIL_AUTH_YN emailAuthYN,
 			C.CELL_AUTH_YN cellAuthYN,
 			C.ADR_AUTH_YN adrAuthYN,
@@ -30,6 +30,8 @@
 		WHERE 
 			(A.EMAIL = #{email} AND A.pw = #{pw})
 			AND
+			A.USEFLAG_YN = 'Y'
+			AND
 			(
 				A.GB_CD = B.GB_CD
 				AND A.USER_NO = C.USER_NO(+)
@@ -37,6 +39,67 @@
 				AND A.USER_NO = E.USER_NO(+)
 				AND A.USER_NO = F.USER_NO(+)
 			)			
+	</select>
+	
+	<select id="userInfo"  resultType="com.live.user.dto.UserDTO">
+		SELECT 
+			A.USER_NO userNo, 
+			A.EMAIL email, 
+			A.GB_CD gbCd, 
+			B.GB_NM gbNm,
+			A.SOCIAL_YN socialYN, 
+			A.SOCIAL_CH socialCH,
+			A.UPDATE_DATE updateDate,
+			A.USEFLAG_YN useFlagYN,
+			C.EMAIL_AUTH_YN emailAuthYN,
+			C.CELL_AUTH_YN cellAuthYN,
+			C.ADR_AUTH_YN adrAuthYN,
+			<choose>
+				<!-- 일반 회원 -->
+      			<when test="gbCd == 1">
+					D.NAME name,
+					D.NICKNAME nickName,
+					TO_CHAR(D.BIRTH, 'YYYYMMDD') birth,
+					D.GENDER_MF genderMF,
+					D.CELL_PHONE_1 cellPhone_1,
+					D.CELL_PHONE_2 cellPhone_2,
+					D.CELL_PHONE_3 cellPhone_3,
+					D.ADDRESS address,
+					D.ADDRESS_DTL addressDtl,
+					D.MARRIED_YN marriedYN,
+				</when>
+				<!-- 일반 회원 끝-->
+				<!-- 사업자 회원-->
+				<when test="gbCd == 2">
+					E.NAME name,
+					E.AG_NO agNo,
+					E.CELL_PHONE_1 cellPhone_1,
+					E.CELL_PHONE_2 cellPhone_2,
+					E.CELL_PHONE_3 cellPhone_3,
+					E.ADDRESS address,
+					E.ADDRESS_DTL addressDtl,
+				</when>
+				<!-- 사업자 회원 끝-->
+			</choose>
+			F.PROFILE_IMG profileImg
+		FROM 
+			USERINFO A
+		    JOIN USER_GUBUN B      ON A.GB_CD = B.GB_CD
+		    LEFT JOIN USER_AUTH C  ON A.USER_NO = C.USER_NO
+		    <if test="gbCd == 1">
+		      LEFT JOIN USERINFO_DTL D ON A.USER_NO = D.USER_NO
+		    </if>
+		    <if test="gbCd == 2">
+		      LEFT JOIN USERINFO_AG_DTL E ON A.USER_NO = E.USER_NO
+		    </if>
+		    LEFT JOIN USER_PROFILE_IMG F ON A.USER_NO = F.USER_NO
+	  	WHERE 
+	  		A.USER_NO = #{userNo}
+		    AND A.USEFLAG_YN = 'Y'		
+	</select>
+	
+	<select id="getUserInstList" resultType="map">
+		SELECT ADDRESS AS "name", TO_CHAR(ADDRESS_ID) AS "code" FROM INTEREST_ADR WHERE USER_NO = #{userNo}
 	</select>
 	
 	<insert id="join" parameterType="com.live.user.dto.UserDTO">
@@ -161,5 +224,38 @@
 	<update id="updateUserProfileImg">
 		UPDATE USER_PROFILE_IMG SET PROFILE_IMG = #{profileImg} WHERE USER_NO = #{userNo}
 	</update>
+	
+	<update id="userDetailUpdate" parameterType="com.live.user.dto.UserDTO">
+		UPDATE USERINFO_DTL SET 
+			NICKNAME = #{dto.nickName}, 
+			GENDER_MF = #{dto.genderMF}, 
+			BIRTH = #{dto.birth},
+			CELL_PHONE_1 = #{dto.cellPhone_1}, 
+			CELL_PHONE_2 = #{dto.cellPhone_2}, 
+			CELL_PHONE_3 = #{dto.cellPhone_3}, 
+			ADDRESS = #{dto.address, jdbcType=VARCHAR}, 
+			ADDRESS_DTL = #{dto.addressDtl, jdbcType=VARCHAR}, 
+			MARRIED_YN = #{dto.marriedYN}
+		WHERE
+			USER_NO = #{dto.userNo}
+	</update>
+	
+	<update id="agentDetailUpdate" parameterType="com.live.user.dto.UserDTO">
+		UPDATE USERINFO_AG_DTL 
+			NAME = #{dto.name}, 
+			AG_NO = #{dto.agNo},
+			CELL_PHONE_1 = #{dto.cellPhone_1}, 
+			CELL_PHONE_2 = #{dto.cellPhone_2}, 
+			CELL_PHONE_3 = #{dto.cellPhone_3}, 
+			ADDRESS = #{dto.address, jdbcType=VARCHAR}, 
+			ADDRESS_DTL = #{dto.addressDtl, jdbcType=VARCHAR}, 
+			DESCRIPTION = #{dto.description, jdbcType=VARCHAR}
+		WHERE
+			USER_NO = #{dto.userNo}
+	</update>
+	
+	<delete id="deleteInstAdr">
+		DELETE FROM INTEREST_ADR WHERE USER_NO = #{userNo}
+	</delete>
 	
 </mapper>

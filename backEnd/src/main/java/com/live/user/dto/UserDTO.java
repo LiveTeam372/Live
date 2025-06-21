@@ -36,6 +36,8 @@ public class UserDTO {
 	private String marriedYN;
 	private String profileImg;
 	
+	private String joinYN;
+	
 	// 관심지역
 	private List<Map<String, String>> inst_address;
 

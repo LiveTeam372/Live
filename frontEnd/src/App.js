@@ -9,6 +9,7 @@ import Product from './pages/Product.js';
 import Like from './pages/Like.js';
 import Reservation from './pages/Reservation.js';
 import Login from './pages/Login.js';
+import MyPage from './pages/MyPage.js';
 
 import "./styles/MainStyles.css";
 
@@ -37,6 +38,7 @@ function App () {
           <Route path='/like' element={<Like />} />
           <Route path='/reservation' element={<Reservation />} />
           <Route path='/login' element={<Login setUser={setUser} />} />
+          <Route path='/my-page' element={<MyPage setUser={setUser} />} />
         </Routes>
         <Footer />
       </BrowserRouter>

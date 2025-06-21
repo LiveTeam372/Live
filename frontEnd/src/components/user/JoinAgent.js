@@ -190,6 +190,7 @@ const JoinAgent = ({ setView }) => {
       cellPhone_3 : userCell_3,
       address : userAdd,
       addressDtl : userAddDtl,
+      joinYN : "Y"
     };
     
     console.log("[ UserDetailForm / userDetailSubmit() / data ] jsonData :: " + JSON.stringify(jsonData));
