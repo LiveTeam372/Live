@@ -78,6 +78,7 @@
 					E.CELL_PHONE_3 cellPhone_3,
 					E.ADDRESS address,
 					E.ADDRESS_DTL addressDtl,
+					E.DESCRIPTION description,
 				</when>
 				<!-- 사업자 회원 끝-->
 			</choose>
@@ -241,7 +242,7 @@
 	</update>
 	
 	<update id="agentDetailUpdate" parameterType="com.live.user.dto.UserDTO">
-		UPDATE USERINFO_AG_DTL 
+		UPDATE USERINFO_AG_DTL SET
 			NAME = #{dto.name}, 
 			AG_NO = #{dto.agNo},
 			CELL_PHONE_1 = #{dto.cellPhone_1}, 
@@ -257,5 +258,9 @@
 	<delete id="deleteInstAdr">
 		DELETE FROM INTEREST_ADR WHERE USER_NO = #{userNo}
 	</delete>
+	
+	<update id="userDelete">
+		UPDATE USERINFO SET USEFLAG_YN = #{useFlagYN} WHERE USER_NO = #{userNo}
+	</update>
 	
 </mapper>

@@ -332,6 +332,24 @@ public class UserController {
  	    }
  	}
  	
+ 	// 회원 탈퇴 처리
+  	@PostMapping("/userDelete.do")
+  	public ResponseEntity<Map<String, Object>> userDelete(@RequestBody Map<String, String> res) {
+  		log.info("User Controller --------------- userDelete()");
+  		String userNo = res.get("userNo");
+  		String useFlagYN = res.get("useFlagYN");
+  		Map<String, Object> msg = new HashMap<>();
+  		
+  		int result = mapper.userDelete(userNo, useFlagYN);
+  		
+  		if(result > 0) {
+  			msg.put("result", "success");
+  		} else {
+  			msg.put("result", "탈퇴 처리가 정상적으로 이루어지지 않았습니다.");
+  		}
+  	    return ResponseEntity.ok(msg);
+  	}
+ 	
 	
 	//--------------------- utils ----------------------------
 	

@@ -3,10 +3,11 @@ import "../../styles/common.css";
 import logo from '../../images/live-logo_.png';
 import axios from '../../api/axiosInstance.js';
 import { useNavigate } from 'react-router-dom';
+import DeleteUserModal from './DeleteUserModal';
 
 import common from '../../resources/common.js';
 
-const MyPage = ({ setView }) => {
+const MyPageUser = ({ setView }) => {
 
   const navigate = useNavigate();
 
@@ -57,6 +58,9 @@ const MyPage = ({ setView }) => {
 
   // 폼 제출 유효성 플래그
   const [vaildFlag, setVaildFlag] = useState(false);
+
+  // 회원 탈퇴 모달
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   useEffect(() => {
     // 연도 리스트 생성
@@ -249,6 +253,33 @@ const MyPage = ({ setView }) => {
   // 관심지역 삭제
   const removeAdr = (code) => {
     setInterestAddrs(interestAddrs.filter(item => item.code !== code));
+  };
+
+  // 회원 탈퇴 처리
+  const handleDeleteAccount = async (e) => {
+    e.preventDefault(); // submit 이벤트 차단
+
+    let jsonData = {
+      userNo: userData.userNo,
+      useFlagYN: "N"
+    }
+    try {
+      const res = await axios.post("http://localhost:16543/user/userDelete.do", jsonData);
+
+      if (res.data.result === "success") {
+        alert('탈퇴 처리 되었습니다.');
+        localStorage.removeItem('user');
+        setShowDeleteModal(false); // 닫기
+        window.location.href = '/';
+        return false;
+      } else {
+        alert(res.data.message);
+        return false;
+      }
+    } catch (err) {
+      alert(err.message);
+      return false;
+    }
   };
 
   // 폼 제출 유효성 검증
@@ -527,7 +558,12 @@ const MyPage = ({ setView }) => {
                   </div>
                 </div>
 
-                <span className='float-end' style={{cursor: 'pointer'}}>→ 다음에 하기</span>          
+                <span className='float-end' style={{cursor: 'pointer'}} onClick={() => setShowDeleteModal(true)}>→ 회원 탈퇴</span>
+                <DeleteUserModal
+                  open={showDeleteModal}
+                  onClose={() => setShowDeleteModal(false)}
+                  onDelete={handleDeleteAccount}
+                />          
                 <button type="button" className={"login-button" } style={{marginTop: "20px"}} onClick={userDetailSubmit}>추가 정보 입력 저장</button>
                 <span className='msg-error'></span>
                 
@@ -541,4 +577,4 @@ const MyPage = ({ setView }) => {
   );
 }
 
-export default MyPage;
+export default MyPageUser;

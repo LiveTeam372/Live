@@ -56,5 +56,7 @@ public interface UserMapper {
 	public int agentDetailUpdate(@Param("dto")UserDTO userDto);
 
 	public int deleteInstAdr(@Param("userNo")String userNo);
+
+	public int userDelete(@Param("userNo")String userNo, @Param("useFlagYN")String useFlagYN);
     
 }
