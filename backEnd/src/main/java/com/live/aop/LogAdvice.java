@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 @Aspect // AOP 프로그램 지정 (Execute)
 public class LogAdvice {
 
-	@Around("execution(* com.live.controller.*Controller.*(..))")
+	@Around("execution(* com.live.**.service.*Service.*(..))")
 	// ProceedingJoinPoint - 실행해야 할 객체(~ServiceImpl) + parameter(넘어가는 데이터)
 	public Object logTime(ProceedingJoinPoint pjp) throws Throwable {
 		

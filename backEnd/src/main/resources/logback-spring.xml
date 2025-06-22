@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %cyan(%logger{36}) - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- SQL문 출력 -->
+    <logger name="jdbc.sqlonly" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- 테이블 형태 결과 출력 -->
+    <logger name="jdbc.resultsettable" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- log4jdbc 전체 로그 핸들링 -->
+    <logger name="log4jdbc.log4j2" level="INFO" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+    
+     <!-- 불필요한 log4jdbc 로그 OFF -->
+    <logger name="jdbc.audit" level="OFF" additivity="false" />
+    <logger name="jdbc.resultset" level="OFF" additivity="false" />
+    <logger name="jdbc.connection" level="OFF" additivity="false" />
+
+    <!-- root logger -->
+    <root level="INFO">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>
